@@ -6,6 +6,8 @@ from time import strftime
 import bs4
 import requests
 import yaml
+import urllib
+import re
 
 if sys.version_info < (3, 0):
     raise Exception("This program requires Python 3.0 or greater")
@@ -228,3 +230,31 @@ class KijijiApi:
                 ads_info[ad_id]['rank'] = rank
 
         return [ad for ad in ads_info.values()]
+
+    def build_ad_from_id(self, ad_id):
+        """
+        Generate an item.yml file from an existing ad on Kijiji
+        """
+        ad_url = "https://www.kijiji.ca/v-view-details.html?adId=" + ad_id
+        response = urllib.request.urlopen(ad_url)
+        ad_html_bytes= response.read()
+        ad_html = ad_html_bytes.decode("utf8")
+        response.close()
+
+        #TODO add try catch if ad does not exist
+        json_as_html = re.search('window.__data=(.*);</script>', ad_html)
+        #ad_json = json.loads(json_as_html.group(1))
+
+        #TODO json_as_html contains the right information but when converting to actual json it loads incorrectly
+
+        with open('read.json') as json_data:
+            ad_json = json.load(json_data)
+            print(ad_json)
+
+        #print(ad_json['config']['toggleAfshTestVip'])
+        #print(ad_json['config']['VIP']['gptData']['gptTargetting']['price'])
+        #print(ad_json['config']['adInfo']['title'])
+        #print(ad_json['phoneNumer']['value'])
+        #print(ad_json['config']['VIP']['adAttributes']['0']['machineValue'])
+
+

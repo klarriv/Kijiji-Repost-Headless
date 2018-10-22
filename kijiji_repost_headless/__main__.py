@@ -46,6 +46,10 @@ def main():
     build_parser = subparsers.add_parser('build_ad', help='generates the item.yml file for a new ad')
     build_parser.set_defaults(function=generate_post_file)
 
+    build_from_id_parser = subparsers.add_parser('build_ad_from_id', help='generates the item.yml file for a new ad from an existing Kijiji ad using its id')
+    build_from_id_parser.add_argument('id', type=str, help='id of the ad you wish to generate an item.yml file for')
+    build_from_id_parser.set_defaults(function=generate_ad_from_id)
+
     args = parser.parse_args()
     try:
         args.function(args)
@@ -70,7 +74,7 @@ def get_post_details(ad_file, api=None):
 
     # Remove image_paths key; it does not need to be sent in the HTTP post request later on
     del data['image_paths']
-    
+
     data['postAdForm.title'] = data['postAdForm.title'].strip()
 
     return [data, files]
@@ -190,6 +194,15 @@ def nuke(args, api=None):
 def generate_post_file(args):
     generator.run_program()
 
+def generate_ad_from_id(args, api=None):
+    """
+    Generate an item.yml file from an existing ad on Kijiji
+    """
+    if not api:
+        api = kijiji_api.KijijiApi()
+        api.login(args.username, args.password)
+
+    api.build_ad_from_id(args.id)
 
 if __name__ == "__main__":
     main()
