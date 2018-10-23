@@ -8,6 +8,7 @@ import requests
 import yaml
 import urllib
 import re
+from pprint import pprint
 
 if sys.version_info < (3, 0):
     raise Exception("This program requires Python 3.0 or greater")
@@ -243,16 +244,13 @@ class KijijiApi:
 
         #TODO add try catch if ad does not exist
         json_as_html = re.search('window.__data=(.*);</script>', ad_html)
-        #ad_json = json.loads(json_as_html.group(1))
+        json_string = "[" + json_as_html.group(1) + "]"
 
-        #TODO json_as_html contains the right information but when converting to actual json it loads incorrectly
+        ad_json = json.loads(json_string)
 
-        with open('read.json') as json_data:
-            ad_json = json.load(json_data)
-            print(ad_json)
-
-        #print(ad_json['config']['toggleAfshTestVip'])
-        #print(ad_json['config']['VIP']['gptData']['gptTargetting']['price'])
+        #pprint(ad_json)
+        #print(json_as_html.group(1))
+        print(ad_json[0]['config']['VIP']['gptData']['gptTargetting']['price'])
         #print(ad_json['config']['adInfo']['title'])
         #print(ad_json['phoneNumer']['value'])
         #print(ad_json['config']['VIP']['adAttributes']['0']['machineValue'])
